@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { format } from 'date-fns';
 import { Entry } from '../types';
+import { calcNextDueDate } from '../utils/calculations';
 
 interface ListCardProps {
   entry: Entry;
@@ -10,8 +11,12 @@ interface ListCardProps {
 
 export default function ListCard({ entry, onPress }: ListCardProps) {
   const propertyName = entry.property_name?.trim() || 'Unnamed Property';
+  const unitNumber = entry.unit_number?.trim() || null;
   const guestName = entry.guest_name?.trim() || 'No Guest';
-  const dateLabel = format(new Date(entry.created_at), 'MMM d, yyyy');
+
+  const dueDate = entry.booking_date
+    ? format(calcNextDueDate(entry.booking_date), 'MMMM d, yyyy')
+    : null;
 
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
@@ -19,10 +24,17 @@ export default function ListCard({ entry, onPress }: ListCardProps) {
         <Text style={styles.propertyName} numberOfLines={1}>
           {propertyName}
         </Text>
+        {unitNumber && (
+          <Text style={styles.unitNumber} numberOfLines={1}>
+            {unitNumber}
+          </Text>
+        )}
         <Text style={styles.guestName} numberOfLines={1}>
           {guestName}
         </Text>
-        <Text style={styles.date}>{dateLabel}</Text>
+        {dueDate && (
+          <Text style={styles.dueDate}>Due Date: {dueDate}</Text>
+        )}
       </View>
     </TouchableOpacity>
   );
@@ -49,11 +61,16 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#1E293B',
   },
+  unitNumber: {
+    fontSize: 13,
+    color: '#2563EB',
+    fontWeight: '500',
+  },
   guestName: {
     fontSize: 14,
     color: '#64748B',
   },
-  date: {
+  dueDate: {
     fontSize: 12,
     color: '#94A3B8',
     marginTop: 4,

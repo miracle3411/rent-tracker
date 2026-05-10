@@ -10,6 +10,7 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
+import { format } from 'date-fns';
 import { getAllEntries } from '../database/queries';
 import { Entry, RootStackParamList } from '../types';
 import ListCard from '../components/ListCard';
@@ -53,6 +54,13 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
+      headerLeft: () => (
+        <Text style={styles.headerTitleText}>Rent Tracker</Text>
+      ),
+      headerTitle: () => (
+        <Text style={styles.headerDate}>{format(new Date(), 'MMM d, yyyy')}</Text>
+      ),
+      headerTitleAlign: 'center',
       headerRight: () => (
         <TouchableOpacity
           onPress={() => navigation.navigate('AddEntry')}
@@ -145,5 +153,16 @@ const styles = StyleSheet.create({
   addButton: {
     marginRight: 8,
     padding: 4,
+  },
+  headerTitleText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1E293B',
+    marginLeft: 16,
+  },
+  headerDate: {
+    fontSize: 15,
+    color: '#94A3B8',
+    fontWeight: '500',
   },
 });
