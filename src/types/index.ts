@@ -6,6 +6,7 @@ export interface Entry {
   unit_number: string | null;
   guest_name: string | null;
   phone_number: string | null;
+  whatsapp_number: string | null;
   email: string | null;
   guest_address: string | null;
   monthly_rent: number | null;

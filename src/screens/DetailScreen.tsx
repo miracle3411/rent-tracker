@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
+  Linking,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -113,7 +114,21 @@ export default function DetailScreen({ navigation, route }: DetailScreenProps) {
 
         <SectionHeader title="Guest Details" />
         <DetailRow label="Guest Name" value={entry.guest_name} />
-        <DetailRow label="Phone Number" value={entry.phone_number} />
+        <ContactRow
+          label="Phone Number"
+          value={entry.phone_number}
+          actions={entry.phone_number ? [
+            { icon: 'call-outline', color: '#16A34A', onPress: () => Linking.openURL(`tel:${entry.phone_number}`) },
+            { icon: 'chatbubble-outline', color: '#2563EB', onPress: () => Linking.openURL(`sms:${entry.phone_number}`) },
+          ] : []}
+        />
+        <ContactRow
+          label="WhatsApp Number"
+          value={entry.whatsapp_number}
+          actions={entry.whatsapp_number ? [
+            { icon: 'logo-whatsapp', color: '#25D366', onPress: () => Linking.openURL(`https://wa.me/${entry.whatsapp_number}`) },
+          ] : []}
+        />
         <DetailRow label="Email" value={entry.email} />
         <DetailRow label="Guest Address" value={entry.guest_address} />
         <DetailRow
@@ -220,13 +235,41 @@ function DetailRow({
   highlight?: boolean;
 }) {
   return (
-    <View style={styles.row}>
-      <Text style={styles.rowLabel}>{label}</Text>
-      <Text
-        style={[styles.rowValue, highlight && styles.highlightValue, !value && styles.emptyValue]}
-      >
+    <View style={[styles.row, multiline && styles.rowMultiline]}>
+      <Text style={[styles.rowLabel, multiline && styles.rowLabelMultiline]}>{label}</Text>
+      <Text style={[styles.rowValue, multiline && styles.rowValueMultiline, highlight && styles.highlightValue, !value && styles.emptyValue]}>
         {value || '—'}
       </Text>
+    </View>
+  );
+}
+
+function ContactRow({
+  label,
+  value,
+  actions,
+}: {
+  label: string;
+  value: string | null | undefined;
+  actions: { icon: string; color: string; onPress: () => void }[];
+}) {
+  return (
+    <View style={styles.row}>
+      <Text style={styles.rowLabel}>{label}</Text>
+      <View style={styles.contactValueRow}>
+        <Text style={[styles.rowValue, !value && styles.emptyValue]}>
+          {value || '—'}
+        </Text>
+        {value && actions.length > 0 && (
+          <View style={styles.contactActions}>
+            {actions.map((action, i) => (
+              <TouchableOpacity key={i} onPress={action.onPress} style={styles.contactBtn}>
+                <Ionicons name={action.icon as any} size={20} color={action.color} />
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+      </View>
     </View>
   );
 }
@@ -257,14 +300,14 @@ const styles = StyleSheet.create({
     color: '#DC2626',
   },
   sectionHeader: {
-    marginTop: 24,
-    marginBottom: 8,
+    marginTop: 14,
+    marginBottom: 4,
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
-    paddingBottom: 8,
+    paddingBottom: 6,
   },
   sectionTitle: {
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: '700',
     color: '#64748B',
     textTransform: 'uppercase',
@@ -272,24 +315,40 @@ const styles = StyleSheet.create({
   },
   row: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    marginBottom: 8,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginBottom: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  rowMultiline: {
     flexDirection: 'column',
-    gap: 2,
+    alignItems: 'flex-start',
   },
   rowLabel: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '600',
     color: '#94A3B8',
     textTransform: 'uppercase',
     letterSpacing: 0.3,
+    flex: 1,
+  },
+  rowLabelMultiline: {
+    flex: 0,
+    marginBottom: 2,
   },
   rowValue: {
-    fontSize: 15,
+    fontSize: 14,
     color: '#1E293B',
-    marginTop: 2,
+    flex: 1,
+    textAlign: 'right',
+  },
+  rowValueMultiline: {
+    textAlign: 'left',
+    flex: 0,
+    width: '100%',
   },
   emptyValue: {
     color: '#CBD5E1',
@@ -297,7 +356,7 @@ const styles = StyleSheet.create({
   highlightValue: {
     color: '#2563EB',
     fontWeight: '700',
-    fontSize: 16,
+    fontSize: 15,
   },
   headerButtons: {
     flexDirection: 'row',
@@ -314,5 +373,18 @@ const styles = StyleSheet.create({
   },
   twoColItem: {
     flex: 1,
+  },
+  contactValueRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  contactActions: {
+    flexDirection: 'row',
+    gap: 8,
+    marginLeft: 8,
+  },
+  contactBtn: {
+    padding: 4,
   },
 });

@@ -1,6 +1,6 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
-import { addMonths } from 'date-fns';
+import { calcNextDueDate } from './calculations';
 
 export async function setupNotifications(): Promise<void> {
   Notifications.setNotificationHandler({
@@ -36,14 +36,8 @@ export async function scheduleRentDueNotification(
   const granted = await requestNotificationPermissions();
   if (!granted) return null;
 
-  let dueDate = addMonths(new Date(bookingDate), 1);
+  const dueDate = calcNextDueDate(bookingDate);
   dueDate.setUTCHours(0, 0, 0, 0); // midnight UTC = 8:00 AM Philippine time
-
-  const now = new Date();
-  if (dueDate <= now) {
-    // 8am on the due date already passed — notify 5 seconds after entry is saved
-    dueDate = new Date(now.getTime() + 5 * 1000);
-  }
 
   const id = await Notifications.scheduleNotificationAsync({
     content: {

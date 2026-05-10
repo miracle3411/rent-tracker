@@ -37,6 +37,7 @@ export default function AddEntryScreen({ navigation }: AddEntryScreenProps) {
   const [unitNumber, setUnitNumber] = useState('');
   const [guestName, setGuestName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [whatsappNumber, setWhatsappNumber] = useState('');
   const [email, setEmail] = useState('');
   const [guestAddress, setGuestAddress] = useState('');
   const [monthlyRent, setMonthlyRent] = useState('');
@@ -69,6 +70,7 @@ export default function AddEntryScreen({ navigation }: AddEntryScreenProps) {
       unit_number: unitNumber.trim() || null,
       guest_name: guestName.trim() || null,
       phone_number: phoneNumber.trim() || null,
+      whatsapp_number: whatsappNumber.trim() || null,
       email: email.trim() || null,
       guest_address: guestAddress.trim() || null,
       monthly_rent: rentNum,
@@ -132,6 +134,12 @@ export default function AddEntryScreen({ navigation }: AddEntryScreenProps) {
           <TextInput style={styles.input} value={phoneNumber}
             onChangeText={(v) => setPhoneNumber(numericOnly(v))}
             placeholder="e.g. 09171234567" placeholderTextColor="#94A3B8"
+            keyboardType="number-pad" />
+        </FormField>
+        <FormField label="WhatsApp Number (with country code)">
+          <TextInput style={styles.input} value={whatsappNumber}
+            onChangeText={(v) => setWhatsappNumber(numericOnly(v))}
+            placeholder="e.g. 639171234567" placeholderTextColor="#94A3B8"
             keyboardType="number-pad" />
         </FormField>
         <FormField label="Email">
@@ -267,35 +275,35 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC' },
   content: { paddingHorizontal: 16, paddingBottom: 40, paddingTop: 8 },
   sectionHeader: {
-    marginTop: 24, marginBottom: 12,
-    borderBottomWidth: 1, borderBottomColor: '#E2E8F0', paddingBottom: 8,
+    marginTop: 16, marginBottom: 8,
+    borderBottomWidth: 1, borderBottomColor: '#E2E8F0', paddingBottom: 6,
   },
   sectionTitle: {
-    fontSize: 13, fontWeight: '700', color: '#64748B',
+    fontSize: 11, fontWeight: '700', color: '#64748B',
     textTransform: 'uppercase', letterSpacing: 0.5,
   },
-  field: { marginBottom: 14 },
-  label: { fontSize: 13, fontWeight: '600', color: '#475569', marginBottom: 6 },
+  field: { marginBottom: 8 },
+  label: { fontSize: 12, fontWeight: '600', color: '#475569', marginBottom: 4 },
   input: {
     backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E2E8F0',
-    borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12,
-    fontSize: 15, color: '#1E293B',
+    borderRadius: 10, paddingHorizontal: 12, paddingVertical: 9,
+    fontSize: 14, color: '#1E293B',
   },
   readOnly: { backgroundColor: '#F1F5F9', justifyContent: 'center' },
-  readOnlyText: { fontSize: 15, color: '#64748B', fontWeight: '600' },
-  textArea: { minHeight: 100, paddingTop: 12 },
+  readOnlyText: { fontSize: 14, color: '#64748B', fontWeight: '600' },
+  textArea: { minHeight: 80, paddingTop: 9 },
   dateButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  dateText: { fontSize: 15, color: '#1E293B' },
-  datePlaceholder: { fontSize: 15, color: '#94A3B8' },
+  dateText: { fontSize: 14, color: '#1E293B' },
+  datePlaceholder: { fontSize: 14, color: '#94A3B8' },
   twoCol: { flexDirection: 'row', alignItems: 'flex-end' },
   colItem: { flex: 1 },
-  colDivider: { width: 12 },
-  paymentResult: { alignItems: 'center', paddingVertical: 16 },
-  paymentResultText: { fontSize: 18, fontWeight: '700', color: '#2563EB' },
+  colDivider: { width: 10 },
+  paymentResult: { alignItems: 'center', paddingVertical: 12 },
+  paymentResultText: { fontSize: 17, fontWeight: '700', color: '#2563EB' },
   saveButton: {
-    marginTop: 32, backgroundColor: '#2563EB',
-    borderRadius: 14, paddingVertical: 16, alignItems: 'center',
+    marginTop: 24, backgroundColor: '#2563EB',
+    borderRadius: 12, paddingVertical: 14, alignItems: 'center',
   },
   saveButtonDisabled: { opacity: 0.6 },
-  saveButtonText: { fontSize: 16, fontWeight: '700', color: '#FFFFFF' },
+  saveButtonText: { fontSize: 15, fontWeight: '700', color: '#FFFFFF' },
 });
