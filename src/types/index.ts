@@ -13,10 +13,13 @@ export interface Entry {
   deposit: number | null;
   remaining_payment: number | null;
   booking_date: string | null;
-  meter_reading: number | null;
-  meter_reading_date: string | null;
+  previous_reading: number | null;
+  current_reading: number | null;
+  multiplier: number | null;
+  payment_result: number | null;
   notes: string | null;
   notification_id: string | null;
+  billing_period_end: string | null;
 }
 
 export type EntryInput = Omit<Entry, 'id' | 'created_at' | 'notification_id'>;

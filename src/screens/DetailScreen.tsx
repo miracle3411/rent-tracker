@@ -12,7 +12,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { getEntryById, deleteEntry } from '../database/queries';
+import { getEntryById, deleteEntry, rolloverReadingsIfNeeded } from '../database/queries';
 import { cancelNotification } from '../utils/notifications';
 import { Entry, RootStackParamList } from '../types';
 import ConfirmModal from '../components/ConfirmModal';
@@ -35,9 +35,11 @@ export default function DetailScreen({ navigation, route }: DetailScreenProps) {
   useFocusEffect(
     useCallback(() => {
       let active = true;
-      getEntryById(id).then((data) => {
+      getEntryById(id).then(async (data) => {
+        if (!active) return;
+        const resolved = data ? await rolloverReadingsIfNeeded(data) : null;
         if (active) {
-          setEntry(data);
+          setEntry(resolved);
           setLoading(false);
         }
       });
@@ -153,13 +155,32 @@ export default function DetailScreen({ navigation, route }: DetailScreenProps) {
         />
 
         <SectionHeader title="Meter Reading" />
+        <View style={styles.twoColRow}>
+          <View style={styles.twoColItem}>
+            <DetailRow label="Previous Reading" value={entry.previous_reading != null ? String(entry.previous_reading) : null} />
+          </View>
+          <View style={styles.twoColItem}>
+            <DetailRow label="Current Reading" value={entry.current_reading != null ? String(entry.current_reading) : null} />
+          </View>
+        </View>
+        <View style={styles.twoColRow}>
+          <View style={styles.twoColItem}>
+            <DetailRow label="Total KW" value={
+              entry.previous_reading != null || entry.current_reading != null
+                ? ((entry.current_reading ?? 0) - (entry.previous_reading ?? 0)).toFixed(2)
+                : null
+            } />
+          </View>
+          <View style={styles.twoColItem}>
+            <DetailRow label="Multiplier" value={entry.multiplier != null ? String(entry.multiplier) : null} />
+          </View>
+        </View>
         <DetailRow
-          label="Electric Meter Reading (kWh)"
-          value={entry.meter_reading != null ? String(entry.meter_reading) : null}
-        />
-        <DetailRow
-          label="Meter Reading Start Date"
-          value={entry.meter_reading_date ? format(new Date(entry.meter_reading_date), 'MMMM d, yyyy') : null}
+          label="Electric Bill Payment"
+          value={entry.payment_result != null
+            ? `₱${entry.payment_result.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`
+            : null}
+          highlight
         />
 
         <SectionHeader title="Notes" />
@@ -285,5 +306,13 @@ const styles = StyleSheet.create({
   },
   headerBtn: {
     padding: 6,
+  },
+  twoColRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 0,
+  },
+  twoColItem: {
+    flex: 1,
   },
 });

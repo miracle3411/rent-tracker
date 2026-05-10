@@ -10,6 +10,20 @@ export function calcNextDueDate(bookingDate: string): Date {
   return dueDate;
 }
 
+export function calcTotalKW(
+  previousReading: number | null,
+  currentReading: number | null
+): number {
+  return (currentReading ?? 0) - (previousReading ?? 0);
+}
+
+export function calcElectricPayment(
+  totalKW: number,
+  multiplier: number | null
+): number {
+  return totalKW * (multiplier ?? 0);
+}
+
 export function calcRemainingPayment(
   monthlyRent: number | null,
   advancedPayment: number | null
